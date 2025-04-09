@@ -16,6 +16,10 @@ node_modules/
 # Ignore Terraform plan and state files
 *.tfplan
 *.tfstate
+*.terraform.lock.hcl
 
 #Ignore Terraform Api files
 dev/.Terraform
+
+*.terraform/
+
