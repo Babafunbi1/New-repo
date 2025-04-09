@@ -1,0 +1,6 @@
+rgname                 = "dev-funbi-rg"
+service_principal_name = "dev-funbi-spn"
+keyvault_name          = "dev-funbi-kv-101"
+SUB_ID = "3212cf99-6d7b-41a9-92be-3d6c304a4943"
+cluster_name = "dev-funbi-cluster"
+node_pool_name = "devnp"

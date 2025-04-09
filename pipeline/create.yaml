@@ -1,0 +1,93 @@
+trigger:
+ branches:
+   include:
+     - main
+     - feature/*
+ paths:
+   include:
+     - lessons/day26/*
+     - azure-pipelines.yml
+
+stages:
+- stage: validate
+  jobs:
+  - job: tf_validate
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+     - task: TerraformInstaller@1
+       inputs:
+         terraformVersion: 'latest'
+     - task: TerraformTaskV4@4
+       inputs:
+         provider: 'azurerm'
+         command: 'init'
+         workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/dev'
+         backendServiceArm: 'Development(3212cf99-6d7b-41a9-92be-3d6c304a4943)'
+         backendAzureRmResourceGroupName: 'terraform-state-rg'
+         backendAzureRmStorageAccountName: 'tfdevbackend2024funbi'
+         backendAzureRmContainerName: 'tfstate'
+         backendAzureRmKey: 'dev.terraform.tfstate'
+     - task: TerraformTaskV4@4
+       inputs:
+         provider: 'azurerm'
+         command: 'validate'
+         workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/dev'
+
+- stage: Dev_deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs: 
+  - job: terraform_apply_dev
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/dev'
+        backendServiceArm: 'Development(3212cf99-6d7b-41a9-92be-3d6c304a4943)'
+        backendAzureRmResourceGroupName: 'terraform-state-rg'
+        backendAzureRmStorageAccountName: 'tfdevbackend2024funbi'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'dev.terraform.tfstate'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/dev'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'Development(3212cf99-6d7b-41a9-92be-3d6c304a4943)'
+
+- stage: stage_deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - job: terraform_apply_stage
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/staging'
+        backendServiceArm: 'Development(3212cf99-6d7b-41a9-92be-3d6c304a4943)'
+        backendAzureRmResourceGroupName: 'terraform-state-rg'
+        backendAzureRmStorageAccountName: 'tfstagebackend2024funbi'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'stage.terrafrom.tfstate'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/lessons/day26/staging'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'Development(3212cf99-6d7b-41a9-92be-3d6c304a4943)'
+
+

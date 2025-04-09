@@ -1,0 +1,6 @@
+rgname                 = "stage-funbi-rg"
+service_principal_name = "stage-funbi-spn"
+keyvault_name          = "stage-funbi-kv-101"
+SUB_ID = "3212cf99-6d7b-41a9-92be-3d6c304a4943"
+node_pool_name = "stagenp"
+cluster_name = "stage-funbi-cluster"
