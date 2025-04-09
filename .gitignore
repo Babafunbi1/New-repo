@@ -1,0 +1,21 @@
+# Ignore the node_modules folder (for Node.js projects)
+node_modules/
+
+# Ignore all .log files
+*.log
+
+# Ignore the .env file (commonly used for environment variables)
+.env
+
+# Ignore OS-specific files (macOS example)
+.DS_Store
+
+# Ignore IDE files (VS Code example)
+.vscode/
+
+# Ignore Terraform plan and state files
+*.tfplan
+*.tfstate
+
+#Ignore Terraform Api files
+dev/.Terraform
