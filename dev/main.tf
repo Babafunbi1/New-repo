@@ -3,6 +3,45 @@ resource "azurerm_resource_group" "rg1" {
   location = var.location
 }
 
+module "vnet" {
+  source              = "../modules/vnet"
+  network_name        = var.network_name
+  location            = var.location
+  resource_group_name = var.rgname
+
+  tags = local.common_tags
+}
+
+module "nsg" {
+  source              = "../modules/nsg"
+  network_name        = var.network_name
+  location            = var.location
+  resource_group_name = var.rgname
+  app_subnet_id       = module.vnet.app_subnet_id
+  firewall_subnet_id  = module.vnet.firewall_subnet_id
+
+  depends_on = [module.vnet]
+}
+
+module "firewall" {
+  source              = "../modules/firewall"
+  location            = var.location
+  resource_group_name = var.rgname
+  firewall_subnet_id  = module.vnet.firewall_subnet_id
+
+  depends_on = [module.vnet]
+}
+
+module "storage" {
+  source              = "../modules/storage"
+  storage_account_name = var.storage_account_name
+  location            = var.location
+  resource_group_name = var.rgname
+
+  tags = local.common_tags
+}
+
+
 module "ServicePrincipal" {
   source                 = "../modules/ServicePrincipal"
   service_principal_name = var.service_principal_name

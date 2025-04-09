@@ -26,3 +26,11 @@ variable "node_pool_name" {
 variable "cluster_name" {
   
 }
+
+variable "network_name" {
+  type = string
+}
+
+variable "storage_account_name" {
+  type = string
+}
