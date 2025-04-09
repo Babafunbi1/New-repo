@@ -9,6 +9,8 @@ module "vnet" {
   location            = var.location
   resource_group_name = var.rgname
 
+  depends_on = [ azurerm_resource_group.rg1 ]
+
   tags = local.common_tags
 }
 
