@@ -91,6 +91,7 @@ resource "azurerm_key_vault_secret" "key_secret" {
 #create Azure Kubernetes Service
 module "aks" {
   source                 = "../modules/aks/"
+  ssh_public_key         = var.ssh_public_key
   service_principal_name = var.service_principal_name
   client_id              = module.ServicePrincipal.client_id
   client_secret          = module.ServicePrincipal.client_secret

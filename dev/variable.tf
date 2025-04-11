@@ -34,3 +34,8 @@ variable "network_name" {
 variable "storage_account_name" {
   type = string
 }
+
+variable "ssh_public_key" {
+  description = "The SSH public key used to access AKS nodes"
+  type        = string
+}
