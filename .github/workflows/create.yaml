@@ -65,6 +65,10 @@ jobs:
           echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
           echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
 
+      - name: Write SSH key to tfvars
+        run: |
+          echo 'ssh_public_key = "${{ secrets.SSH_PUBLIC_KEY }}"' > terraform.auto.tfvars
+
       - name: Terraform Init
         run: terraform init
 
