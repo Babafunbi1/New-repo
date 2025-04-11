@@ -1,0 +1,63 @@
+name: Terraform Destroy CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment: dev, staging, or prod'
+        required: true
+        default: 'dev'
+
+jobs:
+  plan-destroy:
+    name: Terraform Plan Destroy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-repo/${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan - Destroy
+        run: terraform plan -destroy -out=tfplan
+
+  destroy:
+    name: Terraform Destroy
+    needs: plan-destroy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-repo/${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform apply -auto-approve tfplan
