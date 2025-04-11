@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: new-repo/${{ github.event.inputs.environment }}
+        working-directory: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: new-repo/${{ github.event.inputs.environment }}
+        working-directory: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
