@@ -2,6 +2,46 @@ resource "azurerm_resource_group" "rg1" {
   name     = var.rgname
   location = var.location
 }
+module "vnet" {
+  source              = "../modules/vnet"
+  network_name        = var.network_name
+  location            = var.location
+  resource_group_name = var.rgname
+
+  depends_on = [ azurerm_resource_group.rg1 ]
+
+  tags = local.common_tags
+}
+
+module "nsg" {
+  source              = "../modules/nsg"
+  network_name        = var.network_name
+  location            = var.location
+  resource_group_name = var.rgname
+  app_subnet_id       = module.vnet.app_subnet_id
+  firewall_subnet_id  = module.vnet.firewall_subnet_id
+
+  depends_on = [module.vnet]
+}
+
+module "firewall" {
+  source              = "../modules/firewall"
+  location            = var.location
+  resource_group_name = var.rgname
+  firewall_subnet_id  = module.vnet.firewall_subnet_id
+
+  depends_on = [module.vnet]
+}
+
+module "storage" {
+  source              = "../modules/storage"
+  storage_account_name = var.storage_account_name
+  location            = var.location
+  resource_group_name = var.rgname
+
+  tags = local.common_tags
+}
+
 
 module "ServicePrincipal" {
   source                 = "../modules/ServicePrincipal"
@@ -50,6 +90,7 @@ resource "azurerm_key_vault_secret" "example" {
 #create Azure Kubernetes Service
 module "aks" {
   source                 = "../modules/aks/"
+  ssh_public_key         = var.ssh_public_key
   service_principal_name = var.service_principal_name
   client_id              = module.ServicePrincipal.client_id
   client_secret          = module.ServicePrincipal.client_secret

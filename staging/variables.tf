@@ -27,3 +27,16 @@ variable "node_pool_name" {
 variable "cluster_name" {
   
 }
+
+variable "ssh_public_key" {
+  description = "The SSH public key used to access AKS nodes"
+  type        = string
+}
+
+variable "network_name" {
+  type = string
+}
+
+variable "storage_account_name" {
+  type = string
+}
